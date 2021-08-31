@@ -1,17 +1,9 @@
 import React from 'react';
-import { gql, useQuery } from '@apollo/client';
-
-const me = gql`
-  query me {
-    user(login: "iteachonudemy") {
-      name
-      avatarUrl
-    }
-  }
-`;
+import { useQuery } from '@apollo/client';
+import { ME } from './graphql';
 
 function App() {
-  const { loading, error, data } = useQuery(me);
+  const { loading, error, data } = useQuery(ME);
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
   return (
