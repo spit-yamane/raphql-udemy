@@ -1,17 +1,25 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { ME } from './graphql';
+import { SEARCH_REPOSITORIES } from './graphql';
 
-function App() {
-  const { loading, error, data } = useQuery(ME);
+const VARIABLES = {
+  first: 5,
+  after: null,
+  last: null,
+  before: null,
+  query: 'web',
+};
+
+function App({ searchRepositories }) {
+  const { after, before, first, last, query } = VARIABLES;
+
+  const { loading, error, data } = useQuery(SEARCH_REPOSITORIES, {
+    variables: { after, before, first, last, query },
+  });
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
-  return (
-    <div>
-      <div className="App">Hello World</div>
-      <p>{data.user.name}</p>
-    </div>
-  );
+  console.log({ data });
+  return <div></div>;
 }
 
 export default App;
