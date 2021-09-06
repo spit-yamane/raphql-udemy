@@ -35,12 +35,26 @@ function App() {
   const repositoryCount = search.repositoryCount;
   const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories';
   const title = `GitHub ${repositoryUnit} Search Results - ${repositoryCount}`;
+  const edges = search.edges;
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <SearchField props={state.query} onChange={handleChange} />
       </form>
       <p>{title}</p>
+      <ul>
+        {edges.map((edge) => {
+          const node = edge.node;
+          return (
+            <li key={node.id}>
+              <a href="{node.url}" target="_blank">
+                {node.name}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
