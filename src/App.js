@@ -5,7 +5,6 @@ import { SEARCH_REPOSITORIES } from './graphql';
 import SearchField from './searchField';
 
 function App() {
-  // const { after, before, first, last, query } = initalState;
   const [state, setState] = useState({
     first: 5,
     after: null,
@@ -27,14 +26,21 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
+
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
   console.log({ data });
+
+  const search = data.search;
+  const repositoryCount = search.repositoryCount;
+  const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories';
+  const title = `GitHub ${repositoryUnit} Search Results - ${repositoryCount}`;
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <SearchField props={state.query} onChange={handleChange} />
       </form>
+      <p>{title}</p>
     </div>
   );
 }
