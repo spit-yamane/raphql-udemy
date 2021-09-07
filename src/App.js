@@ -5,12 +5,13 @@ import { SEARCH_REPOSITORIES } from './graphql';
 import SearchField from './searchField';
 
 function App() {
+  const PER_PAGE = 5;
   const [state, setState] = useState({
-    first: 5,
+    first: PER_PAGE,
     after: null,
     last: null,
     before: null,
-    query: 'フロントエンド',
+    query: 'フロントエンドエンジニア',
   });
   const { after, before, first, last, query } = state;
   console.log(query);
@@ -21,6 +22,13 @@ function App() {
   const handleChange = (e) => {
     e.preventDefault();
     setState({ ...state, query: e.target.value });
+  };
+  const goNext = (search) => {
+    setState({
+      ...state,
+      first: PER_PAGE,
+      after: search.pageInfo.endCursor,
+    });
   };
 
   const handleSubmit = (e) => {
@@ -36,6 +44,7 @@ function App() {
   const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories';
   const title = `GitHub ${repositoryUnit} Search Results - ${repositoryCount}`;
   const edges = search.edges;
+  const pageInfo = search.pageInfo;
 
   return (
     <div>
@@ -48,13 +57,16 @@ function App() {
           const node = edge.node;
           return (
             <li key={node.id}>
-              <a href="{node.url}" target="_blank">
+              <a href={node.url} rel="noreferrer" target="_blank">
                 {node.name}
               </a>
             </li>
           );
         })}
       </ul>
+      {pageInfo.hasNextPage ? (
+        <button onClick={() => goNext(search)}>Next</button>
+      ) : null}
     </div>
   );
 }
