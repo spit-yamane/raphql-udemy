@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { SEARCH_REPOSITORIES } from './graphql';
-import SearchField from './searchField';
+import SearchField from './components/SearchField';
+import StartButton from './components/StartButton';
 
 function App() {
   const PER_PAGE = 5;
@@ -48,7 +49,6 @@ function App() {
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
-  console.log({ data });
 
   const search = data.search;
   const repositoryCount = search.repositoryCount;
@@ -62,7 +62,7 @@ function App() {
       <form onSubmit={handleSubmit}>
         <SearchField props={state.query} onChange={handleChange} />
       </form>
-      <p>{title}</p>
+      <h1>{title}</h1>
       <ul>
         {edges.map((edge) => {
           const node = edge.node;
@@ -71,6 +71,7 @@ function App() {
               <a href={node.url} rel="noreferrer" target="_blank">
                 {node.name}
               </a>
+              <StartButton props={node} />
             </li>
           );
         })}
