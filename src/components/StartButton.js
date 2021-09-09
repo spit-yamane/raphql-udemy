@@ -1,9 +1,14 @@
 import React from 'react';
 
 const StartButton = ({ props }) => {
-  console.log(props.stargazers.totalCount);
+  console.log(props);
   const tatalCount = props.stargazers.totalCount;
-  return <button>{`${tatalCount} star`}</button>;
+  const viewerHasStarred = props.viewerHasStarred;
+  return (
+    <button>
+      {`${tatalCount} star`} | {viewerHasStarred ? 'starded' : '-'}
+    </button>
+  );
 };
 
 export default StartButton;
