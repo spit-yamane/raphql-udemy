@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-import { useQuery } from '@apollo/client';
-import { SEARCH_REPOSITORIES } from './graphql';
 import SearchField from './components/SearchField';
 import StartButton from './components/StartButton';
+import { GetQueries } from './lib/api';
 
 function App() {
   const PER_PAGE = 5;
@@ -14,16 +13,30 @@ function App() {
     before: null,
     query: 'フロントエンドエンジニア',
   });
-  const { after, before, first, last, query } = state;
-  console.log(query);
-  const { loading, error, data } = useQuery(SEARCH_REPOSITORIES, {
-    variables: { after, before, first, last, query },
-  });
+
+  // graphql　GETメソッド
+  const fetchQueryData = GetQueries(state);
+  const { loading, error, data } = fetchQueryData;
+
+  if (loading) return 'Loading...';
+  if (error) return `Error! ${error.message}`;
+
+  const search = data.search;
+  const repositoryCount = search.repositoryCount;
+  const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories';
+  const title = `GitHub ${repositoryUnit} Search Results - ${repositoryCount}`;
+  const edges = search.edges;
+  const pageInfo = search.pageInfo;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
 
   const handleChange = (e) => {
     e.preventDefault();
     setState({ ...state, query: e.target.value });
   };
+
   const goNext = (search) => {
     setState({
       ...state,
@@ -42,20 +55,6 @@ function App() {
       last: PER_PAGE,
     });
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
-
-  if (loading) return 'Loading...';
-  if (error) return `Error! ${error.message}`;
-
-  const search = data.search;
-  const repositoryCount = search.repositoryCount;
-  const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories';
-  const title = `GitHub ${repositoryUnit} Search Results - ${repositoryCount}`;
-  const edges = search.edges;
-  const pageInfo = search.pageInfo;
 
   return (
     <div>
