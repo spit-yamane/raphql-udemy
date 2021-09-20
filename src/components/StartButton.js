@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useMutation } from '@apollo/client';
-import { ADD_STAR, REMOVE_STAR } from '../graphql';
+import { ADD_STAR, REMOVE_STAR, SEARCH_REPOSITORIES } from '../graphql';
 
 const StartButton = ({ props }) => {
   const totalCount = props.stargazers.totalCount;
@@ -8,8 +8,16 @@ const StartButton = ({ props }) => {
 
   const gql = viewerHasStarred ? REMOVE_STAR : ADD_STAR;
 
-  // eslint-disable-next-line no-unused-vars
-  const [addOrRemoveStar, { data, loading, error }] = useMutation(gql);
+  const [addOrRemoveStar, { loading, error }] = useMutation(gql, {
+    refetchQueries: (mutationResult) => {
+      console.log(mutationResult);
+      return [
+        {
+          query: SEARCH_REPOSITORIES,
+        },
+      ];
+    },
+  });
 
   const handleAddStar = () => {
     addOrRemoveStar({ variables: { input: { starrableId: props.id } } });
