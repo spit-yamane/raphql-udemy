@@ -2,25 +2,43 @@ import React from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_STAR, REMOVE_STAR, SEARCH_REPOSITORIES } from '../graphql';
 
-const StartButton = ({ props }) => {
-  const totalCount = props.stargazers.totalCount;
-  const viewerHasStarred = props.viewerHasStarred;
+const StartButton = (props) => {
+  console.log(props);
+  const { node } = props;
+  const { query, first, last, before, after } = props.state;
+  const starCount = node.stargazers.totalCount;
 
-  const gql = viewerHasStarred ? REMOVE_STAR : ADD_STAR;
+  const gql = node.viewerHasStarred ? REMOVE_STAR : ADD_STAR;
 
   const [addOrRemoveStar, { loading, error }] = useMutation(gql, {
-    refetchQueries: (mutationResult) => {
-      console.log(mutationResult);
-      return [
-        {
-          query: SEARCH_REPOSITORIES,
-        },
-      ];
+    update(cache, { data: { addStar, removeStar } }) {
+      const { starrable } = addStar || removeStar;
+      const data = cache.readQuery({
+        query: SEARCH_REPOSITORIES,
+        variables: { query, first, last, after, before },
+      });
+
+      const edges = data.search.edges;
+
+      const newEdges = edges.map((edge) => {
+        if (edge.node.id === node.id) {
+          const totalCount = edge.node.stargazers.totalCount;
+          const diff = starrable.viewerHasStarred ? 1 : -1;
+          const newTotalCount = totalCount + diff;
+          edge.node.stargazers.totalCount = newTotalCount;
+        }
+        return edge;
+      });
+      console.log(newEdges);
+      data.search.edges = newEdges;
+      cache.writeQuery({ query: SEARCH_REPOSITORIES, data });
     },
   });
 
   const handleAddStar = () => {
-    addOrRemoveStar({ variables: { input: { starrableId: props.id } } });
+    addOrRemoveStar({
+      variables: { input: { starrableId: node.id } },
+    });
   };
 
   if (loading) return 'Submitting...';
@@ -32,7 +50,7 @@ const StartButton = ({ props }) => {
         handleAddStar();
       }}
     >
-      {`${totalCount} star`} | {viewerHasStarred ? 'starrded' : '-'}
+      {`${starCount} star`} | {node.viewerHasStarred ? 'starrded' : '-'}
     </button>
   );
 };

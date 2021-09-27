@@ -1,5 +1,5 @@
-import { useQuery, useMutation } from '@apollo/client';
-import { SEARCH_REPOSITORIES, ADD_STAR } from '../graphql';
+import { useQuery } from '@apollo/client';
+import { SEARCH_REPOSITORIES } from '../graphql';
 
 export const GetQueries = (state) => {
   const { after, before, first, last, query } = state;

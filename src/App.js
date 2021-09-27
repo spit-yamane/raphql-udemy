@@ -70,7 +70,7 @@ function App() {
               <a href={node.url} rel="noreferrer" target="_blank">
                 {node.name}
               </a>
-              <StartButton props={node} />
+              <StartButton node={node} {...{ state }} />
             </li>
           );
         })}
