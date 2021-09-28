@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-
-import SearchField from './components/SearchField';
+import React, { useState, useRef } from 'react';
 import StartButton from './components/StartButton';
 import { GetQueries } from './lib/api';
 
@@ -11,8 +9,11 @@ function App() {
     after: null,
     last: null,
     before: null,
-    query: 'フロントエンドエンジニア',
+    query: '',
   });
+
+  const inputRef = useRef(null);
+  console.log(inputRef);
 
   // graphql　GETメソッド
   const fetchQueryData = GetQueries(state);
@@ -28,13 +29,8 @@ function App() {
   const edges = search.edges;
   const pageInfo = search.pageInfo;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
-
-  const handleChange = (e) => {
-    e.preventDefault();
-    setState({ ...state, query: e.target.value });
+  const handleSubmit = () => {
+    setState({ ...state, query: inputRef.current.value });
   };
 
   const goNext = (search) => {
@@ -59,7 +55,8 @@ function App() {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <SearchField props={state.query} onChange={handleChange} />
+        <input type="text" ref={inputRef} autoFocus />
+        <button type="submit">Submit</button>
       </form>
       <h1>{title}</h1>
       <ul>

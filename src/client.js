@@ -22,5 +22,13 @@ const link = ApolloLink.from([headerslink, httplink]);
 
 export default new ApolloClient({
   link,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      UnconventionalRootQuery: {
+        // The RootQueryFragment can only match if the cache knows the __typename
+        // of the root query object.
+        subscriptionType: true,
+      },
+    },
+  }),
 });
